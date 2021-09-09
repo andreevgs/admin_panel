@@ -1,0 +1,1 @@
+export const DB_ACCESS = 'mongodb+srv://username:1q2w3e4r@cluster0.9lkcz.mongodb.net/users';

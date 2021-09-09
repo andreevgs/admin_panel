@@ -1,34 +1,40 @@
 import {
   Body,
-  Controller, Get,
+  Controller, Get, Param,
   Post,
-  Put,
+  Put, UsePipes,
 } from '@nestjs/common';
-import { User } from './decorators/user.decorator';
+import { User } from './schemas/user.schema';
 import { UserService } from '@app/user/user.service';
-import { LoginUserDto } from './dto/loginUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { CreateUserDto } from '@app/user/dto/createUser.dto';
+import { BackendValidationPipe } from '@app/shared/pipes/backendValidation.pipe';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  getAllUsers(): any {
+  async getAllUsers(): Promise<User[]> {
     return this.userService.getAllUsers();
   }
 
-  @Post('login')
-  login(@Body() loginDto: LoginUserDto): any {
-    console.log('loginDto', loginDto);
-    return this.userService.login(loginDto);
+  @Get(':id')
+  async getUser(@Param('id') currentUserId: number): Promise<User> {
+    return this.userService.getUser(currentUserId);
+  }
+
+  @Post()
+  @UsePipes(new BackendValidationPipe())
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.userService.createUser(createUserDto)
   }
 
   @Put(':id')
-  updateCurrentUser(
-    @User('id') currentUserId: number,
+  async updateCurrentUser(
+    @Param('id') currentUserId: number,
     @Body() updateUserDto: UpdateUserDto,
-  ): any {
-    return this.userService.updateUser(updateUserDto);
+  ): Promise<User> {
+    return this.userService.updateUser(currentUserId, updateUserDto);
   }
 }

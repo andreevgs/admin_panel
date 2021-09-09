@@ -14,7 +14,7 @@ export class User {
   @Prop()
   email: string;
 
-  @Prop()
+  @Prop({ default: false })
   blocking: boolean;
 }
 
